@@ -3,7 +3,6 @@ DISPLAY=:0
 #KITTY_ENABLE_WAYLAND=1
 WAYLAND_DISPLAY=wayland-1
  
-current_app=$(swaymsg -t get_tree | jq -r '..|try select(.focused == true)' | jq -r "..|try select(.fullscreen_mode == 1)")
 play /home/sealyj/Music/PremiumBeat_0046_sci_fi_beeps_4.wav & 
 
 ping -W 0.6 -c 1 192.168.1.105                      # Try once.
@@ -19,6 +18,7 @@ else
 	sleep_time=25
 fi
 
+current_app=$(swaymsg -t get_tree | jq -r '..|try select(.focused == true)' | jq -r "..|try select(.fullscreen_mode == 1)")
 if [ -z "$current_app" ] ; then
 	#user focus not in fullscreen app 
 	#launch in tiled modez
@@ -30,9 +30,9 @@ if [ -z "$current_app" ] ; then
 else
 	#user focused in fullscreen 
 	#exit from fullscreen
-	sway fullscreen toggle
 	current_app_id=$(swaymsg -t get_tree | jq -r '..|try select(.focused == true)' | jq -r "..|try select(.app_id)")
 	if [ "$1" == "-a" ] ; then # -a for automate 
+		sway fullscreen toggle
 		timeout -s HUP $sleep_time $launch_cam_command &
 		sleep 7.1
 		new_app_id=$(swaymsg -t get_tree | jq -r '..|try select(.focused == true)' | jq -r "..|try select(.app_id)")
