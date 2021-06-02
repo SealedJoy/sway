@@ -10,12 +10,14 @@ rc=$?
 if [[ $rc -eq 0 ]] ; then
 	#camera direct stream contactable
 	launch_cam_command="mpv --video-reversal-buffer=240MiB --vid=1 --framedrop=decoder+vo --no-correct-pts --fps=8 --wayland-app-id=summoned_tile --window-scale=0.4 http://192.168.1.105:8081"
+	stop_cam_command="killall -SIGUSR1 mpv"
 	sleep_time=12
 else
 	echo "launching through browser"
 	#take longer route
 	#launch_cam_command="firefox -P camera_stream -width 60 -height 60 -new-window --kiosk http://192.168.1.145:8123/lovelace/0; sway fullscreen toggle"
 	launch_cam_command="qutebrowser --target=window http://192.168.1.145:8123/lovelace/0"
+	stop_cam_command="killall -SIGUSR1 qutebrowser"
 	sleep_time=25
 fi
 ######
@@ -24,28 +26,26 @@ if [ -z "$current_app" ] ; then
 	#user focus not in fullscreen app 
 	#launch in tiled modez
 	if [ "$1" == "-a" ] || [ "$1" == "-t" ] ; then # -a for automate 
-		$launch_cam_command
+		$launch_cam_command &
+		sleep $sleep_time
+		$stop_cam_command
 	else
 		$launch_cam_command
 	fi
 else
 	#user focused in fullscreen 
 	#exit from fullscreen
-	sway mark --add return_to_fullscreen
+	#sway mark --add return_to_fullscreen
+	sway fullscreen disable
 	if [ "$1" == "-a" ] ; then # -a for automate 
-		sway fullscreen disable
 		$launch_cam_command &
-		sleep 7.1
-		killall -SIGUSR1 qutebrowser >/dev/null
-		if [ -n "$current_app_id" ] && [ "$new_app_id" == "$current_app_id" ] ; then
-			sway [con_mark="return_to_fullscreen"] focus
+		sleep $sleep_time
+		$stop_cam_command
+		#sway [con_mark="return_to_fullscreen"] focus
 
-			sway fullscreen toggle
-			sway mark --replace return_to_fullscreen
-		fi
+		#sway fullscreen toggle
+		#sway mark --replace return_to_fullscreen
 	else 	
-		$launch_cam_command &
-		sleep 7.1
-
+		$launch_cam_command
 	fi
 fi
