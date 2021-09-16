@@ -5,14 +5,14 @@ stream_hostname="192.168.1.12"
 backup_stream="http://deb.lan:8123/lovelace/0"
 stream="http://192.168.1.12:8081"
  
-play /home/sealyj/Music/PremiumBeat_0046_sci_fi_beeps_4.wav &>/dev/null  
+play -v 0.5 /home/sealyj/Music/PremiumBeat_0013_cursor_selection_07.wav & #>/dev/null  
 #### TEST ROUTE ####
 ping -W 0.6 -c 1 bg_cam_pi.lan >/dev/null # Try once.
 rc=$?
 if [[ $rc -eq 0 ]] ; then
 	#camera direct stream contactable
-	launch_cam_command="mpv --no-audio --video-reversal-buffer=240MiB --vid=1 --framedrop=vo --no-correct-pts --fps=7 --wayland-app-id=float-video --window-scale=0.4 $stream"
-	sleep_time=12
+	launch_cam_command="mpv --no-focus-on-open --no-audio --video-reversal-buffer=240MiB --vid=1 --framedrop=vo --no-correct-pts --fps=7 --wayland-app-id=float-video --window-scale=0.4 $stream"
+	sleep_time=14
 else
 	echo "launching through browser"
 	#take longer route
